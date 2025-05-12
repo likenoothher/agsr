@@ -1,0 +1,102 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
+
+    <changeSet id="0001-INIT-SENSOR-TYPES" author="aziarets">
+        <createTable tableName="sensor_types">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            insert into sensor_types(id, name) VALUES (1, 'Pressure'),(2, 'Voltage'),(3, 'Temperature'),(4, 'Humidity');
+        </sql>
+    </changeSet>
+
+    <changeSet id="0002-INIT-UNITS" author="aziarets">
+        <createTable tableName="units">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="symbol" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            insert into units(id, symbol) VALUES (1, 'bar'),(2, 'V'),(3, '°С'),(4, '%');
+        </sql>
+    </changeSet>
+
+    <changeSet id="0003-INIT-SENSORS" author="aziarets">
+        <createTable tableName="sensors">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="model" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="range_from" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="range_to" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_sensors_types" references="sensor_types(id)"/>
+            </column>
+            <column name="unit_id" type="bigint">
+                <constraints foreignKeyName="fk_sensors_units" references="units(id)"/>
+            </column>
+            <column name="location" type="varchar(40)"/>
+            <column name="description" type="varchar(200)"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="sensors" indexName="idx_sensor_name">
+            <column name="name"/>
+        </createIndex>
+
+        <createIndex tableName="sensors" indexName="idx_sensor_model">
+            <column name="model"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="0004-INIT-USERS" author="aziarets">
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--admin pswd:agsr_admin-->
+        <!--viewer pswd:agsr_viewer-->
+        <sql>
+            insert into users(id, user_name, password, role) VALUES (1, 'admin', '$2a$10$cOP3NFU20h2iMNqknzbXXu1UUGTd0maJ9ED6sh9uezmWDLziAYGJC', 'ADMIN'),
+                                                                    (2, 'viewer', '$2a$10$YdlcuWm4eXLY8jfPQRtRouR/U1pS/NsqbmDWrTTLmfmH/fdJZpvtG', 'VIEWER');
+        </sql>
+    </changeSet>
+</databaseChangeLog> 
