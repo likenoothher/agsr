@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  monitor-sensors-postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: monitor_sensors
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - monitor_sensors_postgres_data:/var/lib/postgresql/data
+
+  monitor-sensors-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: monitor-sensors-service
+    depends_on:
+      - monitor-sensors-postgres
+    environment:
+      MONITOR_SENSORS_SPRING_DATASOURCE_URL: jdbc:postgresql://monitor-sensors-postgres:5432/monitor_sensors
+      MONITOR_SENSORS_SPRING_DATASOURCE_USERNAME: postgres
+      MONITOR_SENSORS_SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+
+volumes:
+  monitor_sensors_postgres_data:
